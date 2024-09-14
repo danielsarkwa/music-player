@@ -1,14 +1,15 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useLogTrackPlayerState } from '@/hooks/useLogTrackPlayerState';
+import { useSetupTrackPlayer } from '@/hooks/useSetupTrackPlayer';
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useCallback } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
@@ -18,10 +19,22 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 SplashScreen.preventAutoHideAsync();
 
 const App = () => {
+  const handleTrackPlayerLoaded = useCallback(() => {
+    SplashScreen.hideAsync();
+  }, []);
+
+  useSetupTrackPlayer({
+    onLoad: handleTrackPlayerLoaded,
+  });
+
+  useLogTrackPlayerState();
+
   return (
     <SafeAreaProvider>
-      <RootNavigation />
-      <StatusBar style='auto' />
+      <GestureHandlerRootView>
+        <RootNavigation />
+        <StatusBar style='auto' />
+      </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 };
@@ -29,27 +42,11 @@ const App = () => {
 const RootNavigation = () => {
   const colorScheme = useColorScheme();
 
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <GestureHandlerRootView>
-        <Stack>
-          <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-        </Stack>
-      </GestureHandlerRootView>
+      <Stack>
+        <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+      </Stack>
     </ThemeProvider>
   );
 };
