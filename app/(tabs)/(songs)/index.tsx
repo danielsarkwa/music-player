@@ -1,9 +1,10 @@
 import { screenPadding } from '@/app/constants/tokens';
 import { defaultStyles } from '@/app/styles';
-import library from '@/assets/data/library.json';
 import { TrackList } from '@/components/TrackList';
 import { trackTitleFilter } from '@/helpers/filter';
+import { generateTracksListId } from '@/helpers/miscellaneous';
 import { useNavigationSearch } from '@/hooks/useNavigationSearch';
+import { useTracks } from '@/store/library';
 import { useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
 
@@ -12,11 +13,13 @@ const SongsScreen = () => {
     searchBarOptions: { placeholder: 'Find in songs' },
   });
 
-  const filteredTracks = useMemo(() => {
-    if (!search) return library;
+  const tracks = useTracks();
 
-    return library.filter(trackTitleFilter(search));
-  }, [search, library]);
+  const filteredTracks = useMemo(() => {
+    if (!search) return tracks;
+
+    return tracks.filter(trackTitleFilter(search));
+  }, [search, tracks]);
 
   return (
     <View style={defaultStyles.container}>
@@ -24,7 +27,11 @@ const SongsScreen = () => {
         contentInsetAdjustmentBehavior='automatic'
         style={{ paddingHorizontal: screenPadding.horizontal }}
       >
-        <TrackList tracks={filteredTracks} scrollEnabled={false} />
+        <TrackList
+          id={generateTracksListId('favorites', search)}
+          tracks={filteredTracks}
+          scrollEnabled={false}
+        />
       </ScrollView>
     </View>
   );
