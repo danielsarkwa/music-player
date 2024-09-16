@@ -1,7 +1,5 @@
 import { colors, fontSize } from '@/app/constants/tokens';
 import { defaultStyles } from '@/app/styles';
-import { TrackShortcutsMenu } from '@/components/TrackShortcutsMenu';
-import { StopPropagation } from '@/components/utils/StopPropagation';
 import { Ionicons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/build/Entypo';
 import { StyleSheet, Text, View } from 'react-native';
@@ -82,15 +80,7 @@ export const TrackListItem = ({
             )}
           </View>
 
-          <StopPropagation>
-            <TrackShortcutsMenu track={track}>
-              <Entypo
-                name='dots-three-horizontal'
-                size={18}
-                color={colors.icon}
-              />
-            </TrackShortcutsMenu>
-          </StopPropagation>
+          <Entypo name='dots-three-horizontal' size={18} color={colors.icon} />
         </View>
       </View>
     </TouchableHighlight>
