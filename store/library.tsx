@@ -60,9 +60,11 @@ export const useFavorites = () => {
   };
 };
 
-export const useArtists = () =>
-  useLibraryStore((state) => {
-    return state.tracks.reduce((acc, track) => {
+export const useArtists = () => {
+  const tracks = useLibraryStore((state) => state.tracks);
+
+  const artists = useMemo(() => {
+    return tracks.reduce((acc, track) => {
       const existingArtist = acc.find((artist) => artist.name === track.artist);
 
       if (existingArtist) {
@@ -76,11 +78,17 @@ export const useArtists = () =>
 
       return acc;
     }, [] as Artist[]);
-  });
+  }, [tracks]);
+
+  return artists;
+};
 
 export const usePlaylists = () => {
-  const playlists = useLibraryStore((state) => {
-    return state.tracks.reduce((acc, track) => {
+  const tracks = useLibraryStore((state) => state.tracks);
+  const addToPlaylist = useLibraryStore((state) => state.addToPlaylist);
+
+  const playlists = useMemo(() => {
+    return tracks.reduce((acc, track) => {
       track.playlist?.forEach((playlistName) => {
         const existingPlaylist = acc.find(
           (playlist) => playlist.name === playlistName
@@ -99,9 +107,7 @@ export const usePlaylists = () => {
 
       return acc;
     }, [] as Playlist[]);
-  });
-
-  const addToPlaylist = useLibraryStore((state) => state.addToPlaylist);
+  }, [tracks]); // Tracks dependency ensures memoization works correctly
 
   return { playlists, addToPlaylist };
 };
